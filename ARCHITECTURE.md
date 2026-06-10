@@ -6,41 +6,47 @@ Board-specific boot-chain ownership, fast minimal Linux image generation, and cl
 
 ## Runtime Shape
 
-1. Hardware or simulator input is sampled through a narrow driver boundary.
-2. A control profile normalizes state into a deterministic decision surface.
-3. Safety checks reject unsafe commands before they reach the actuator, transport, or update path.
-4. Telemetry and validation logs are emitted for repeatable review.
+1. AM335x ROM loads `MLO` from the microSD FAT boot partition.
+2. SPL loads `u-boot.img`.
+3. U-Boot loads `zImage` and `am335x-boneblack.dtb`.
+4. The kernel mounts a tiny ext4 BusyBox rootfs.
+5. BusyBox init starts `ttyO0` getty for a serial login prompt.
+6. Boot timing evidence tracks SPL, U-Boot, kernel, and rootfs phases against a five-second target.
 
 ## C++17 Design Shape
 
-- `ProjectProfile` owns project identity and evidence text.
-- `IReadinessRule` defines a narrow strategy interface for scaffold readiness checks.
-- `RequiredEvidenceRule` is a concrete strategy used by the starter executable and tests.
-- The scaffold keeps documentation, executable behavior, and validation concerns separated.
+- `BbbBootImageValidator` owns boot-image composition checks.
+- `BoardTarget`, `BootChain`, `RootfsProfile`, `PartitionLayout`, and `BootTiming` make the image contract explicit.
+- `TextBootImageReporter` emits CI and portfolio evidence.
+- Buildroot snippets under `buildroot/` document the actual board defconfig and image layout.
 
 ## SOLID Notes
 
-- Single Responsibility: profile data and readiness rules are separate.
-- Open/Closed: new readiness rules can be added without changing the profile object.
-- Liskov Substitution: any `IReadinessRule` can replace the default rule.
-- Interface Segregation: the readiness interface exposes only one focused operation.
-- Dependency Inversion: the executable consumes the readiness rule abstraction.
+- Single Responsibility: board target, boot chain, rootfs, partition layout, timing, and reporting are separated.
+- Open/Closed: alternate BBB boot profiles can be added through data.
+- Liskov Substitution: microSD and eMMC layouts can share the same validation model.
+- Interface Segregation: each record carries one focused part of the boot image.
+- Dependency Inversion: future Buildroot parsers can feed the same validator.
 
 ## Boundaries
 
-- `src/`: native starter implementation and future device-specific drivers.
+- `include/bbb_boot/`: BBB boot image model.
+- `src/`: validator, reporter, and CLI demo.
+- `buildroot/`: sample BBB defconfig, genimage config, and rootfs overlay.
 - `docs/`: validation plans, timing notes, hardware captures, and acceptance evidence.
-- `tests/`: repo-level smoke tests and future simulator or host-side unit tests.
+- `tests/`: host-side boot image composition tests.
 - `.github/workflows/`: CI entry point for build and validation evidence.
 
 ## Validation Plan
 
-- Build the host starter with CMake.
-- Run the executable and confirm the reported profile matches this repository.
-- Run CTest to validate the C++17 readiness scaffold.
-- Add hardware-specific logs after the first board, simulator, or bus test.
+- Build the host BBB boot validator with CMake.
+- Run the executable and confirm the minimal boot image is accepted.
+- Run CTest to validate boot chain, rootfs, partition layout, and timing.
+- Add Buildroot build logs and BBB serial boot captures after hardware integration.
 - Capture CI, terminal, and hardware evidence for the portfolio detail page.
 
 ## Expansion Notes
 
-Replace the starter profile with the project-specific implementation slice while preserving the same review boundaries: build, tests, architecture notes, validation logs, and screenshots.
+- Add parsed Buildroot `.config` and generated `sdcard.img` checks.
+- Add boot log parser that computes SPL, U-Boot, kernel, and rootfs timing from serial output.
+- Add microSD flashing and checksum scripts once hardware evidence is captured.

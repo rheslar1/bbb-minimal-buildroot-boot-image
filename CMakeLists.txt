@@ -7,9 +7,17 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 enable_testing()
 
+add_library(bbb_boot_core
+  src/BbbBootImage.cpp
+)
+target_include_directories(bbb_boot_core PUBLIC include)
+target_compile_options(bbb_boot_core PRIVATE -Wall -Wextra -Wpedantic)
+
 add_executable(${PROJECT_NAME} src/main.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE bbb_boot_core)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 
-add_executable(profile_tests tests/ProfileTests.cpp)
-target_compile_options(profile_tests PRIVATE -Wall -Wextra -Wpedantic)
-add_test(NAME profile_tests COMMAND profile_tests)
+add_executable(bbb_boot_image_tests tests/BbbBootImageTests.cpp)
+target_link_libraries(bbb_boot_image_tests PRIVATE bbb_boot_core)
+target_compile_options(bbb_boot_image_tests PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME bbb_boot_image_tests COMMAND bbb_boot_image_tests)

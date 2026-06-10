@@ -1,17 +1,20 @@
 # Validation Plan
 
-## Current Scaffold Checks
+## Current Host Checks
 
 - CMake configure completes.
-- C++17 starter executable builds.
-- Executable prints the project title, SOLID marker, stack, and validation target.
-- CTest verifies the project profile and readiness strategy.
+- C++17 BBB boot-image validator builds.
+- Executable accepts the BeagleBone Black minimal Buildroot boot profile.
+- CTest verifies device tree, MLO placement, rootfs size, microSD layout, and login timing.
+- GitHub Actions runs configure, build, executable smoke run, and CTest.
 
 ## Hardware Evidence To Add
 
-- Board, simulator, or bus setup photo.
-- Terminal output from the first successful run.
-- Timing, power, memory, or safety measurement relevant to this project.
+- Buildroot build log and generated image list.
+- `genimage` output showing FAT boot and ext4 rootfs partitions.
+- BBB serial boot log from AM335x ROM through login prompt.
+- Timing evidence for SPL, U-Boot, kernel, and rootfs phases.
+- Photo of microSD boot wiring and serial console.
 - CI screenshot after the public repository is pushed.
 
 ## Project-Specific Evidence Target

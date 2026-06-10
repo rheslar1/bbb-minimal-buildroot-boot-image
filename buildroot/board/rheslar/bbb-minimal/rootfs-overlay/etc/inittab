@@ -1,0 +1,4 @@
+::sysinit:/etc/init.d/rcS
+ttyO0::respawn:/sbin/getty -L ttyO0 115200 vt100
+::restart:/sbin/init
+::shutdown:/etc/init.d/rcK

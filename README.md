@@ -4,9 +4,7 @@ BeagleBone Black AM335x project that builds U-Boot, Linux kernel, and a tiny roo
 
 ## Portfolio Purpose
 
-This repository is an Embedded Systems project scaffold for the Rheslar portfolio. It is designed to become a hardware-backed project with build output, validation logs, and reviewable implementation evidence.
-
-All generated Embedded Systems repos are C++17-first and are framed around C++ design patterns and SOLID design principles.
+This repository implements a host-testable BeagleBone Black minimal Buildroot boot-image profile. It validates the AM335x boot chain, U-Boot SPL artifacts, kernel/device tree selection, microSD partition layout, BusyBox rootfs, UART login, and sub-5-second login-prompt evidence.
 
 ## Stack
 
@@ -31,11 +29,12 @@ ctest --test-dir build --output-on-failure
 
 ## Implementation Slices
 
-- C++17 starter executable that exposes the project identity, stack, and validation target.
-- Small strategy-style readiness check that keeps the scaffold aligned with C++ design patterns.
-- Architecture document with control boundaries, data flow, safety assumptions, and evidence plan.
-- CTest smoke test that keeps source, docs, and CI files present as the repo grows.
-- GitHub Actions workflow for configure, build, executable smoke run, and repository validation.
+- BBB AM335x board profile using `am335x-boneblack.dtb`.
+- Buildroot defconfig sample for U-Boot SPL, `MLO`, `u-boot.img`, `zImage`, and BusyBox userspace.
+- `genimage.cfg` sample for FAT32 boot and ext4 rootfs microSD layout.
+- Rootfs overlay with `ttyO0` getty for serial login.
+- Boot timing model for SPL, U-Boot, kernel, and rootfs phases.
+- CTest coverage for accepted image, wrong device tree, missing MLO placement, oversized rootfs, slow login, and report evidence.
 
 ## Evidence Target
 
